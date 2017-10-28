@@ -18,9 +18,13 @@ apply plugin: 'com.bmuschko.docker-remote-api'
 sourceCompatibility = 1.8
 
 ext {
+    dockerHubUser =  project.hasProperty('DOCKER_HUB_USER') ? DOCKER_HUB_USER : System.getenv('DOCKER_HUB_USER')
+    dockerHubEmail =  project.hasProperty('DOCKER_HUB_EMAIL') ? DOCKER_HUB_EMAIL : System.getenv('DOCKER_HUB_EMAIL')
+    dockerHubPassword =  project.hasProperty('DOCKER_HUB_PASSWORD') ? DOCKER_HUB_PASSWORD : System.getenv('DOCKER_HUB_PASSWORD')
+
     port = "5005"
     dockerHostname = "chatroom.rsobook.fri.si"
-    dockerImageName = String.format("%s/%s", DOCKER_HUB_USER, project.name)
+    dockerImageName = String.format("%s/%s", dockerHubUser, project.name)
     dockerImageTag = String.format("%s:%s", dockerImageName, version)
     dockerContainerName = String.format("%s", project.name)
 }
@@ -28,11 +32,7 @@ ext {
 repositories {
     mavenCentral()
     maven {
-        url 'https://box.kisek.si/nexus/repository/maven-releases' //'http://localhost:8081/repository/maven-releases/'
-        credentials {
-            username NEXUS_USERNAME
-            password NEXUS_PASSWORD
-        }
+        url 'https://box.kisek.si/nexus/repository/maven-releases'
     }
 }
 
@@ -93,9 +93,9 @@ import com.bmuschko.gradle.docker.tasks.image.*
 docker {
     registryCredentials {
         url = 'https://hub.docker.com/'
-        email = DOCKER_HUB_EMAIL
-        password = DOCKER_HUB_PASSWORD
-        username = DOCKER_HUB_USER
+        email = dockerHubEmail
+        password = dockerHubPassword
+        username = dockerHubUser
     }
 }
 
@@ -110,15 +110,14 @@ task dockerfileCreate(type: Dockerfile) {
         port
     }
     addFile(buildKumuluzEE.archiveName, "/usr/local/bin/kumuluzee/")
-    //addFile("config.yaml", "/usr/local/bin/kumuluzee")
     addFile("run.sh", "/usr/local/bin/kumuluzee")
     defaultCommand('/bin/bash','/usr/local/bin/kumuluzee/run.sh', 'start')
 }
 
 task dockerfileCopyScript(type: Copy){
     group 'docker'
-    from "/build-dependency/run.sh"
-    from "/build-dependency/config.yaml"
+    from project.projectDir.path + "/build-dependency/run.sh"
+    from project.projectDir.path + "/build-dependency/config.yaml"
     into dockerfileCreate.destFile.parentFile
 }
 
