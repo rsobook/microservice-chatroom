@@ -4,6 +4,9 @@ metadata:
   name: ms-chatroom
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: ms-chatroom
   template:
     metadata:
       labels:
