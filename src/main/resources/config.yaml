@@ -1,8 +1,8 @@
 kumuluzee:
-  name: ms.chatroom
+  name: ms-chatroom
   env:
     name: dev
-  version: 1.0.0
+  version: 2.0.0
   server:
     base-url:
     http:
