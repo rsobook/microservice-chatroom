@@ -1,5 +1,8 @@
 package si.fri.rsobook.rest;
 
+import com.kumuluz.ee.logs.cdi.Log;
+import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.annotation.Metric;
 import si.fri.rsobook.config.ChatRoomApiConfigProperties;
 
 import javax.enterprise.context.RequestScoped;
@@ -22,11 +25,18 @@ public class ChatRoomResource {
     @Inject
     private ChatRoomApiConfigProperties chatRoomApiConfigProperties;
 
+    @Inject
+    @Metric(name = "chatRoom_returned")
+    private Counter chatRoomReturnedCounter;
+
+
     @GET
     public Response getList() {
+        chatRoomReturnedCounter.inc(chatRooms.size());
         return Response.ok(chatRooms).build();
     }
 
+    @Log
     @POST
     @Path("{room}")
     public Response postRoom(@PathParam("room") String room) {
@@ -39,6 +49,7 @@ public class ChatRoomResource {
         }
     }
 
+    @Log
     @DELETE
     @Path("{room}")
     public Response deleteRoom(@PathParam("room") String room) {
