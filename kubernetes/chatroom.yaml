@@ -13,7 +13,7 @@ spec:
         app: ms-chatroom
     spec:
       containers:
-        - image: rsobook/ms-chatroom:2.0.1
+        - image: rsobook/ms-chatroom:2.0.2
           name: ms-chatroom
           env:
             - name: PORT
